@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="customLauncher:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/customLauncher_jar</output-path>
+    <root id="archive" name="customLauncher.jar">
+      <element id="module-output" name="customLauncher" />
+    </root>
+  </artifact>
+</component>
