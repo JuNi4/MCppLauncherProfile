@@ -14,7 +14,7 @@ public class Main {
     public static void main(String[] args) {
 
         // get all the arguments
-        Map<String, ArrayList<String>> arguments = argParse.parse( args );
+        Map<String, String> arguments = argParse.parse( args );
 
         // check if an executable was supplied
         if ( !arguments.containsKey( "--execute" ) )
@@ -26,33 +26,48 @@ public class Main {
         // assembled list of arguments
         ArrayList<String> argsPass = new ArrayList<>();
         String filePath = "";
+        String workDir = "";
 
         for ( String key : arguments.keySet() )
         {
             // dont add execute key
-            if ( !key.equals("--execute") ) {
-                argsPass.add(" " + key);
-            }
-
-            // add all values
-            for ( String arg : arguments.get( key ) )
+            if ( key.equals("--execute") )
             {
-                if ( !key.equals("--execute") ) {
-                    argsPass.add(" " + arg);
-                } else {
-                    filePath += arg + " ";
+                // set file for execution
+                filePath = arguments.get(key);
+            }
+            else if (key.equals("--workdir"))
+            {
+                // set working directory
+                workDir = arguments.get(key);
+            }
+            else
+            {
+                if (key != arguments.get(key))
+                {
+                    argsPass.add(key);
                 }
+                argsPass.add(arguments.get(key));
             }
         }
-
-        filePath = filePath.substring( 0, filePath.length() -1 );
 
         // call the executable
         try {
             argsPass.add(0,filePath);
-            System.out.println(argsPass);
             ProcessBuilder pr = new ProcessBuilder( argsPass );
-            pr.start();
+
+            if (!workDir.isEmpty())
+            {
+                pr.directory(new File(workDir));
+            }
+
+            Process running = pr.start();
+
+            running.getInputStream().transferTo(System.out);
+            running.getErrorStream().transferTo(System.out);
+
+            while (running.isAlive()) {}
+
         } catch ( IOException e ) {
             System.out.println("Could not execute command");
             e.printStackTrace();
