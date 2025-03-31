@@ -8,6 +8,7 @@ import java.net.URL;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Map;
+import java.lang.ProcessBuilder.Redirect;
 
 public class Main {
 
@@ -60,13 +61,20 @@ public class Main {
             {
                 pr.directory(new File(workDir));
             }
-
+            // redirect process errors to standart output
+            pr.redirectErrorStream(true);
+            // redicrect the input stream
+            pr.redirectInput(Redirect.INHERIT);
+            // redirect the output stream
+            pr.redirectOutput(Redirect.INHERIT);
+            // redirect errors
+            pr.redirectError(Redirect.INHERIT);
+            
             Process running = pr.start();
-
-            running.getInputStream().transferTo(System.out);
-            running.getErrorStream().transferTo(System.out);
-
+            
             while (running.isAlive()) {}
+
+            System.out.println("Process finished!");
 
         } catch ( IOException e ) {
             System.out.println("Could not execute command");
